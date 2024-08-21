@@ -10,11 +10,20 @@ function main() {
   case "$1" in
     "list") listProfiles ;;
     "selected") echo "Selected profile: $(cat ./.selected)" ;;
+    "edit")
+      local editor=${FCEDIT:-${VISUAL:-${EDITOR:-vi}}}
+      profileIsAvaliable
+      if [ "$?" -eq 0 ]; then
+        echo "Profile $profile does not exist! Execute '$0 list' to find all available profiles"
+        return
+      fi
+      $editor $MY_PATH/profiles/$profile
+      ;;
     "create")
       local editor=${FCEDIT:-${VISUAL:-${EDITOR:-vi}}}
       profileIsAvaliable
       if [ "$?" -eq 1 ]; then
-        echo "Profile $1 already exists! Please choose a different name"
+        echo "Profile $profile already exists! Please choose a different name"
         return
       fi
       $editor $MY_PATH/profiles/$profile
