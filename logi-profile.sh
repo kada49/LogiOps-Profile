@@ -2,50 +2,64 @@
 MY_PATH="$(dirname -- "${BASH_SOURCE[0]}")"
 
 array=()
-PARAM1=${1:-"NONE"}
+profile=${2:-"NONE"}
 
 function main() {
   getProfiles
+  
+  case "$1" in
+    "list") listProfiles ;;
+    "selected") echo "Selected profile: $(cat ./.selected)" ;;
+    "set")
+      profileIsAvaliable
+      if [ "$?" -eq 1 ]; then
+        checkIfSu
+        echo "Setting profile..."
+        if [ -f /etc/logid.cfg ]; then
+          rm /etc/logid.cfg
+        fi
+        cp ${MY_PATH}/profiles/${profile}.cfg /etc/logid.cfg
+        systemctl restart logid
+        echo "$profile" > ./.selected
+      else
+        echo "The profile $profile does not exist! Execute '$0 list' to find all available profiles"
+      fi
+      ;;
+    *) printUsage ;;
+  esac
 
-  if [ "$PARAM1" == "--list" ] || [ "$PARAM1" == "-l" ]; then
-    echo "Available profiles:"
-    for item in "${array[@]}"; do
-      echo "  ${item}"
-    done
+}
 
-    return
-  fi
+function printUsage() {
+  echo TODO
+}
 
-
-  if [ "$PARAM1" == "--selected" ] || [ "$PARAM1" == "-s" ]; then
-    echo "Selected profile: $(cat ./selected)"
-
-    return
-  fi
-
-
-  contains="0"
+function profileIsAvaliable() {
+  contains=0
   for i in "${array[@]}"; do
-    if [ "$i" == "$PARAM1" ]; then
-      contains="1"
+    if [ "$i" == "$profile" ]; then
+      return 1
     fi
   done
+  return 0
+}
 
-  if [ "$contains" == "0" ]; then
-    echo "There exists no profile called '${PARAM1}'"
-  else
-    echo "Setting profile..."
-    if [ -f /etc/logid.cfg ]; then
-      sudo rm /etc/logid.cfg
-    fi
-    sudo cp ${MY_PATH}/profiles/${PARAM1}.cfg /etc/logid.cfg
-    sudo systemctl restart logid
-    echo "$PARAM1" > ./selected
+function checkIfSu() {
+  if [ "$EUID" -ne 0 ]; then
+    echo "Please run as root!"
   fi
+  exit 1
+}
+
+function listProfiles() {
+  echo "Available profiles:"
+  for item in "${array[@]}"; do
+    echo "  ${item}"
+  done
 }
 
 function getProfiles() {
-  search_dir=$MY_PATH/profiles
+  local search_dir=$MY_PATH/profiles
   for entry in "$search_dir"/*; do
   
     IFS='/' read -ra ADDR <<< "$entry"
