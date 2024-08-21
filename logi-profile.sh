@@ -17,7 +17,7 @@ function main() {
         echo "Profile $profile does not exist! Execute '$0 list' to find all available profiles"
         return
       fi
-      $editor $MY_PATH/profiles/$profile
+      $editor $MY_PATH/profiles/$profile.cfg
       ;;
     "create")
       local editor=${FCEDIT:-${VISUAL:-${EDITOR:-vi}}}
@@ -26,8 +26,8 @@ function main() {
         echo "Profile $profile already exists! Please choose a different name"
         return
       fi
-      $editor $MY_PATH/profiles/$profile
-      if [ -f $MY_PATH/profiles/$profile ]; then
+      $editor $MY_PATH/profiles/$profile.cfg
+      if [ -f $MY_PATH/profiles/$profile.cfg ]; then
         echo "Successfully created profile: $profile"
       else
         echo "Aborted creating a new profile"
