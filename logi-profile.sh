@@ -17,7 +17,7 @@ function main() {
         echo "Profile $1 already exists! Please choose a different name"
         return
       fi
-      $editor ${MY_PATH}/profiles/$profile
+      $editor $MY_PATH/profiles/$profile
       if [ -f $MY_PATH/profiles/$profile ]; then
         echo "Successfully created profile: $profile"
       else
@@ -32,9 +32,9 @@ function main() {
         if [ -f /etc/logid.cfg ]; then
           rm /etc/logid.cfg
         fi
-        cp ${MY_PATH}/profiles/${profile}.cfg /etc/logid.cfg
+        cp $MY_PATH/profiles/$profile.cfg /etc/logid.cfg
         systemctl restart logid
-        echo "$profile" > ./.selected
+        echo "$profile" > $MY_PATH/.selected
       else
         echo "The profile $profile does not exist! Execute '$0 list' to find all available profiles"
       fi
@@ -68,7 +68,7 @@ function checkIfSu() {
 function listProfiles() {
   echo "Available profiles:"
   for item in "${array[@]}"; do
-    echo "  ${item}"
+    echo "  $item"
   done
 }
 
