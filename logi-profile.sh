@@ -54,7 +54,13 @@ function main() {
 }
 
 function printUsage() {
-  echo TODO
+  echo logiops profile
+  echo -------------------------------------------------------------
+  echo list                   - view all available profiles
+  echo set \<ProfileName\>    - enable an existing
+  echo selected               - view selected profile
+  echo edit                   - edit an existing profile
+  echo create \<ProfileName\> - create a new profile from a template
 }
 
 function profileIsAvaliable() {
